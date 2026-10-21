@@ -1,0 +1,61 @@
+ "use client";
+
+import { useMemo, useState } from "react";
+
+const lessons = [
+  { id: "theory", number: "01", title: "ทฤษฎีเซลล์", subtitle: "พื้นฐานของสิ่งมีชีวิต", text: "สิ่งมีชีวิตทุกชนิดประกอบด้วยเซลล์ เซลล์เป็นหน่วยพื้นฐานของโครงสร้างและการทำงาน และเซลล์ใหม่เกิดจากเซลล์เดิมที่มีอยู่", points: ["สิ่งมีชีวิตประกอบด้วยเซลล์หนึ่งเซลล์หรือหลายเซลล์", "เซลล์เป็นหน่วยพื้นฐานของโครงสร้างและหน้าที่", "เซลล์เกิดจากการแบ่งตัวของเซลล์เดิม"] },
+  { id: "microscope", number: "02", title: "กล้องจุลทรรศน์", subtitle: "มองเห็นโลกขนาดเล็ก", text: "กล้องจุลทรรศน์ช่วยขยายภาพของโครงสร้างที่เล็กเกินกว่าจะมองเห็นด้วยตาเปล่า โดยกล้องแสงใช้แสงและเลนส์ ส่วนกล้องอิเล็กตรอนใช้ลำอิเล็กตรอน", points: ["กำลังขยายรวม = กำลังขยายเลนส์ใกล้ตา × เลนส์ใกล้วัตถุ", "ปรับภาพด้วยปุ่มปรับหยาบและปุ่มปรับละเอียด", "กำลังแยกชัดเป็นความสามารถในการแยกจุดสองจุดออกจากกัน"] },
+  { id: "types", number: "03", title: "ชนิดของเซลล์", subtitle: "โพรแคริโอตและยูแคริโอต", text: "เซลล์โพรแคริโอตไม่มีเยื่อหุ้มนิวเคลียส ส่วนเซลล์ยูแคริโอตมีนิวเคลียสและออร์แกเนลล์ที่มีเยื่อหุ้ม เช่น เซลล์สัตว์และเซลล์พืช", points: ["โพรแคริโอต: ไม่มีนิวเคลียสแท้จริง เช่น แบคทีเรีย", "ยูแคริโอต: มีนิวเคลียส เช่น พืช สัตว์ เห็ดรา", "เซลล์พืชมีผนังเซลล์ คลอโรพลาสต์ และแวคิวโอลขนาดใหญ่"] },
+  { id: "organelles", number: "04", title: "ออร์แกเนลล์", subtitle: "โครงสร้างและหน้าที่", text: "ออร์แกเนลล์แต่ละชนิดมีหน้าที่เฉพาะ ช่วยให้เซลล์ทำงานได้อย่างเป็นระบบ ตั้งแต่การควบคุมข้อมูลพันธุกรรมไปจนถึงการผลิตพลังงาน", points: ["นิวเคลียสเก็บ DNA และควบคุมการทำงานของเซลล์", "ไมโทคอนเดรียสร้าง ATP จากกระบวนการหายใจระดับเซลล์", "ไรโบโซมสังเคราะห์โปรตีน และกอลจิแอพพาราตัสปรับแต่งและส่งโปรตีน"] },
+  { id: "membrane", number: "05", title: "เยื่อหุ้มเซลล์", subtitle: "ขอบเขตที่มีชีวิต", text: "เยื่อหุ้มเซลล์ประกอบด้วยฟอสโฟลิพิดสองชั้นและโปรตีน มีสมบัติเลือกผ่าน ช่วยรักษาสภาพแวดล้อมภายในเซลล์และควบคุมการแลกเปลี่ยนสาร", points: ["หัวฟอสโฟลิพิดชอบน้ำ หางไม่ชอบน้ำ", "โปรตีนเยื่อหุ้มช่วยลำเลียงสารและรับสัญญาณ", "เยื่อหุ้มเซลล์มีความยืดหยุ่นตามแบบจำลองโมเสกของไหล"] },
+  { id: "transport", number: "06", title: "การลำเลียงสาร", subtitle: "เข้าและออกจากเซลล์", text: "สารผ่านเยื่อหุ้มเซลล์ได้หลายวิธี การลำเลียงแบบไม่ใช้พลังงานเคลื่อนตามความเข้มข้น ส่วนการลำเลียงแบบใช้พลังงานต้องอาศัย ATP หรือพลังงานรูปแบบอื่น", points: ["การแพร่: อนุภาคเคลื่อนจากบริเวณเข้มข้นสูงไปต่ำ", "ออสโมซิส: การเคลื่อนที่ของน้ำผ่านเยื่อเลือกผ่าน", "แอกทีฟทรานสปอร์ตลำเลียงสารทวนความเข้มข้นโดยใช้พลังงาน"] },
+  { id: "signaling", number: "07", title: "การสื่อสารระหว่างเซลล์", subtitle: "ส่งและรับสัญญาณ", text: "เซลล์ส่งสัญญาณด้วยสารเคมีหรือการสัมผัสโดยตรง ตัวรับสัญญาณจะกระตุ้นกระบวนการภายในเซลล์ให้ตอบสนองอย่างเหมาะสม", points: ["ตัวรับสัญญาณจำเพาะต่อโมเลกุลสัญญาณ", "สัญญาณอาจกระตุ้นหรือยับยั้งการทำงานของเซลล์", "การสื่อสารช่วยประสานงานระหว่างเซลล์และอวัยวะ"] },
+  { id: "respiration", number: "08", title: "การหายใจระดับเซลล์", subtitle: "พลังงานสำหรับชีวิต", text: "เซลล์เปลี่ยนพลังงานเคมีจากสารอาหารให้อยู่ในรูป ATP ที่นำไปใช้ได้ กระบวนการแบบใช้ออกซิเจนเกิดหลายขั้นตอนและมีไมโทคอนเดรียเป็นบริเวณสำคัญในเซลล์ยูแคริโอต", points: ["ไกลโคไลซิสเกิดในไซโทซอล", "วัฏจักรกรดซิตริกเกิดในเมทริกซ์ไมโทคอนเดรีย", "ห่วงโซ่ถ่ายทอดอิเล็กตรอนสร้าง ATP ส่วนใหญ่"] },
+  { id: "division", number: "09", title: "การแบ่งเซลล์", subtitle: "เติบโต ซ่อมแซม สืบพันธุ์", text: "ไมโทซิสสร้างเซลล์ลูกที่มีจำนวนโครโมโซมเท่าเดิม ใช้ในการเจริญเติบโตและซ่อมแซม ส่วนไมโอซิสลดจำนวนโครโมโซมเพื่อสร้างเซลล์สืบพันธุ์", points: ["วัฏจักรเซลล์ประกอบด้วยอินเตอร์เฟสและระยะ M", "ไมโทซิสแบ่งนิวเคลียสเป็นสองชุด", "ไมโอซิสมีการแบ่งสองครั้งและช่วยเพิ่มความหลากหลายทางพันธุกรรม"] },
+];
+
+const quiz = [
+  { q: "โครงสร้างใดเป็นแหล่งสร้าง ATP ส่วนใหญ่ในการหายใจระดับเซลล์แบบใช้ออกซิเจน?", options: ["ไรโบโซม", "ไมโทคอนเดรีย", "กอลจิแอพพาราตัส", "ไลโซโซม"], answer: 1, why: "ไมโทคอนเดรียเป็นบริเวณที่เกิดวัฏจักรกรดซิตริกและห่วงโซ่ถ่ายทอดอิเล็กตรอน ซึ่งสร้าง ATP ส่วนใหญ่" },
+  { q: "การเคลื่อนที่ของน้ำผ่านเยื่อเลือกผ่านเรียกว่าอะไร?", options: ["ออสโมซิส", "เอนโดไซโทซิส", "แอกทีฟทรานสปอร์ต", "การสังเคราะห์โปรตีน"], answer: 0, why: "ออสโมซิสคือการเคลื่อนที่สุทธิของน้ำผ่านเยื่อเลือกผ่านตามความต่างศักย์น้ำ" },
+  { q: "ข้อใดเป็นลักษณะของเซลล์โพรแคริโอต?", options: ["มีนิวเคลียสแท้จริง", "มีไมโทคอนเดรีย", "ไม่มีเยื่อหุ้มนิวเคลียส", "มีคลอโรพลาสต์ทุกชนิด"], answer: 2, why: "สารพันธุกรรมของโพรแคริโอตอยู่ในบริเวณนิวคลีออยด์ ไม่ได้ถูกล้อมด้วยเยื่อหุ้มนิวเคลียส" },
+];
+const glossary = [
+  ["Cell", "เซลล์", "หน่วยพื้นฐานของโครงสร้างและการทำงานของสิ่งมีชีวิต"],
+  ["Organelle", "ออร์แกเนลล์", "โครงสร้างภายในเซลล์ที่ทำหน้าที่เฉพาะ"],
+  ["Nucleus", "นิวเคลียส", "บริเวณที่เก็บสารพันธุกรรม DNA ในเซลล์ยูแคริโอต"],
+  ["Mitochondrion", "ไมโทคอนเดรีย", "ออร์แกเนลล์สำคัญในการสร้าง ATP"],
+  ["Osmosis", "ออสโมซิส", "การเคลื่อนที่สุทธิของน้ำผ่านเยื่อเลือกผ่าน"],
+  ["Diffusion", "การแพร่", "การเคลื่อนที่สุทธิของอนุภาคตามความเข้มข้น"],
+  ["ATP", "เอทีพี", "โมเลกุลที่เซลล์ใช้ถ่ายโอนพลังงาน"],
+  ["Ribosome", "ไรโบโซม", "โครงสร้างที่ทำหน้าที่สังเคราะห์โปรตีน"],
+  ["Mitosis", "ไมโทซิส", "การแบ่งนิวเคลียสเพื่อสร้างนิวเคลียสลูกสองชุด"],
+];
+
+export default function Home() {
+  const [active, setActive] = useState("theory");
+  const [answers, setAnswers] = useState<Record<number, number>>({});
+  const [glossaryQuery, setGlossaryQuery] = useState("");
+  const activeLesson = lessons.find((lesson) => lesson.id === active) ?? lessons[0];
+  const filteredGlossary = useMemo(() => glossary.filter((row) => row.join(" ").toLowerCase().includes(glossaryQuery.toLowerCase())), [glossaryQuery]);
+  const score = quiz.filter((item, index) => answers[index] === item.answer).length;
+
+  return (
+    <main>
+      <header className="topbar"><a className="brand" href="#"><span className="brand-mark">c</span><span>cytology<span className="brand-dot">.</span></span></a><nav><a href="#lessons">บทเรียน</a><a href="#quiz">แบบทดสอบ</a><a href="#glossary">อภิธานศัพท์</a></nav><a className="header-cta" href="#lessons">เริ่มเรียน <span>↗</span></a></header>
+      <section className="hero">
+        <div className="hero-copy"><div className="eyebrow"><span className="eyebrow-dot" /> BIOLOGY · LEARNING NOTES</div><h1>เซลล์ —<br/><em>หน่วยพื้นฐาน</em><br/>ของชีวิต</h1><p>สำรวจโลกของเซลล์ ตั้งแต่โครงสร้างเล็กที่สุด ไปจนถึงระบบที่ทำให้สิ่งมีชีวิตดำรงอยู่ได้</p><div className="hero-actions"><a className="primary-button" href="#lessons">เข้าสู่บทเรียน <span>↓</span></a><span className="reading-time">9 หัวข้อ · อ่านประมาณ 20 นาที</span></div></div>
+        <div className="hero-visual" aria-label="ภาพประกอบเซลล์"><div className="orbit orbit-one"/><div className="orbit orbit-two"/><div className="cell-illustration"><div className="cell-nucleus"/><div className="organelle o1"/><div className="organelle o2"/><div className="organelle o3"/><div className="organelle o4"/><div className="organelle o5"/></div><span className="visual-label label-a">CELL STRUCTURE <i>01</i></span><span className="visual-label label-b">BIOLOGY NOTES <i>↗</i></span><div className="visual-caption"><span className="caption-line"/> THE MICROSCOPIC WORLD</div></div>
+      </section>
+      <div className="intro-strip"><span>เรียนรู้เป็นลำดับ</span><div className="strip-line"/><span>ทบทวนได้ทุกเวลา</span><div className="strip-line"/><span>แบบทดสอบพร้อมเฉลย</span></div>
+      <section className="learning-layout" id="lessons">
+        <aside className="lesson-nav"><div className="nav-heading">เนื้อหาในบทนี้ <span>09</span></div>{lessons.map((lesson) => <button key={lesson.id} onClick={() => {setActive(lesson.id); document.getElementById("lesson-detail")?.scrollIntoView({behavior:"smooth",block:"start"});}} className={active === lesson.id ? "lesson-nav-item active" : "lesson-nav-item"}><span>{lesson.number}</span>{lesson.title}<b>↗</b></button>)}<div className="nav-note"><span className="note-mark">✳</span><p>เคล็ดลับการเรียน</p><small>อ่านแนวคิดหลักก่อน แล้วค่อยทบทวนคำศัพท์และทำแบบทดสอบ</small></div></aside>
+        <div className="lesson-content" id="lesson-detail"><div className="section-kicker">CHAPTER {activeLesson.number} <span>—</span> CELL BIOLOGY</div><h2>{activeLesson.title}</h2><p className="section-subtitle">{activeLesson.subtitle}</p><div className="lesson-card"><div className="card-index">แนวคิดสำคัญ <span>{activeLesson.number}</span></div><p className="lesson-lead">{activeLesson.text}</p><div className="key-points">{activeLesson.points.map((point, index) => <div className="key-point" key={point}><span>{String(index+1).padStart(2,"0")}</span><p>{point}</p></div>)}</div></div><div className="lesson-bottom"><span>อ่านจบแล้ว? ลองทบทวนความเข้าใจ</span><button onClick={() => {document.getElementById("quiz")?.scrollIntoView({behavior:"smooth"});}}>ไปแบบทดสอบ <span>→</span></button></div>
+          <div className="all-lessons"><div className="subhead"><div><span className="section-kicker">YOUR LEARNING PATH</span><h3>หัวข้อทั้งหมด</h3></div><span className="muted">เลือกหัวข้อเพื่ออ่าน</span></div><div className="lesson-grid">{lessons.map((lesson) => <button key={lesson.id} className={active === lesson.id ? "topic-card chosen" : "topic-card"} onClick={() => {setActive(lesson.id); document.getElementById("lesson-detail")?.scrollIntoView({behavior:"smooth",block:"start"});}}><span className="topic-number">{lesson.number}</span><strong>{lesson.title}</strong><small>{lesson.subtitle}</small><span className="topic-arrow">↗</span></button>)}</div></div>
+        </div>
+      </section>
+      <section className="quiz-section" id="quiz"><div className="quiz-heading"><div><div className="section-kicker">CHECK YOUR UNDERSTANDING</div><h2>ทบทวนความเข้าใจ</h2><p>ลองตอบคำถามสั้น ๆ เพื่อทบทวนแนวคิดสำคัญจากบทเรียน</p></div><div className="quiz-score"><span>คะแนนของคุณ</span><strong>{Object.keys(answers).length ? `${score}/${quiz.length}` : "—"}</strong></div></div><div className="quiz-list">{quiz.map((item,index)=><div className="question-card" key={item.q}><div className="question-top"><span>QUESTION {String(index+1).padStart(2,"0")}</span><span>{answers[index] !== undefined ? (answers[index] === item.answer ? "ตอบถูก" : "ทบทวนอีกครั้ง") : "เลือกคำตอบหนึ่งข้อ"}</span></div><h3>{item.q}</h3><div className="options">{item.options.map((option,optionIndex)=><button key={option} disabled={answers[index] !== undefined} onClick={() => setAnswers((prev)=>({...prev,[index]:optionIndex}))} className={answers[index] !== undefined && optionIndex === item.answer ? "option correct" : answers[index] === optionIndex ? "option incorrect" : "option"}><span>{String.fromCharCode(65+optionIndex)}</span>{option}{answers[index] !== undefined && optionIndex === item.answer && <b>✓</b>}</button>)}</div>{answers[index] !== undefined && <div className="explanation"><strong>คำอธิบาย</strong><p>{item.why}</p></div>}</div>)}</div><div className="quiz-footer"><span>{Object.keys(answers).length === quiz.length ? `ทำครบแล้ว — คุณได้ ${score} จาก ${quiz.length} คะแนน` : `ตอบแล้ว ${Object.keys(answers).length} จาก ${quiz.length} ข้อ`}</span><button onClick={() => setAnswers({})}>เริ่มทำใหม่ ↻</button></div></section>
+      <section className="glossary-section" id="glossary"><div className="glossary-heading"><div><div className="section-kicker">KEY TERMS</div><h2>อภิธานศัพท์</h2><p>คำศัพท์สำคัญที่ควรรู้ พร้อมความหมายแบบกระชับ</p></div><label className="glossary-search"><span>⌕</span><input placeholder="ค้นหาคำศัพท์..." value={glossaryQuery} onChange={(e)=>setGlossaryQuery(e.target.value)}/></label></div><div className="glossary-table"><div className="glossary-row glossary-header"><span>ENGLISH</span><span>ภาษาไทย</span><span>ความหมาย</span></div>{filteredGlossary.map((row)=><div className="glossary-row" key={row[0]}><strong>{row[0]}</strong><strong>{row[1]}</strong><span>{row[2]}</span></div>)}{!filteredGlossary.length && <p className="no-results">ไม่พบคำศัพท์ที่ตรงกับการค้นหา</p>}</div></section>
+      <footer className="footer"><a className="brand" href="#"><span className="brand-mark">c</span><span>cytology<span className="brand-dot">.</span></span></a><span>สื่อการเรียนรู้ชีววิทยา · เซลล์และการทำงาน</span><a href="#">กลับขึ้นด้านบน ↑</a></footer>
+    </main>
+  );
+}
